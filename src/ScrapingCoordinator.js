@@ -109,7 +109,7 @@ export default class ScrapingCoordinator {
     this.#outputWriter.write(newProducts);
   }
 
-  async #processLinks() {
+  async #processLinks(linkInstructions) {
     const { container, metadata } = linkInstructions;
     const newPagesToVisit = await this.#crawler.getElements(
       container,
