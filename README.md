@@ -10,10 +10,9 @@ This application was built using the following technologies:
 
 ## Installation
 
-Install [Node.js] v16 (LTS).
-Clone this repository.
-
-Open a terminal in the cloned folder and run the following command:
+- Install [Node.js] v16 (LTS).
+- Clone this repository.
+- Open a terminal in the cloned folder and run the following command:
 
 ```sh
 npm install
@@ -58,7 +57,7 @@ The tool can be configured by changing its configuration file in ./config/defaul
 | htmlWriter.file    | output.html   | When running "outputType": "html", configures the file where to store results |
 | delay              | 2000          | Configures how long to wait before starting to progress to the next page      |
 
-[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
+[//]: #
 [node-config]: https://github.com/lorenwest/node-config
 [puppeteer]: https://github.com/puppeteer/puppeteer
 [node.js]: http://nodejs.org
