@@ -7,5 +7,8 @@
 - category => clickOnce
 - subcategory => click
 
+- instructions from cli argument
+- getInstructions serving cached file on subsequent calls
+
 - distributed
 - tests

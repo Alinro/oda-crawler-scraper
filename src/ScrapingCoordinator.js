@@ -2,68 +2,103 @@ import CrawlerInterface from "./crawlers/CrawlerInterface.js";
 import { wait } from "./utils.js";
 
 export default class ScrapingCoordinator {
-  navigator;
-  outputWriter;
-  delayTimer;
-  config;
-  pagesAlreadyVisited = new Set();
-  pagesToVisit = [];
+  /**
+   * @var {CrawlerInterface} crawler a reference to a class that implements the CrawlerInterface
+   */
+  #crawler;
+
+  /**
+   * @var {object} outputWriter TODO
+   */
+  #outputWriter;
+
+  /**
+   * @var {number} delayTimer how long to wait before processing the next page
+   */
+  #delayTimer;
+
+  /**
+   * @var {object} instructions instructions that describe how to navigate and collect data from a page
+   */
+  #instructions;
+
+  /**
+   * @var {Set} pagesAlreadyVisited a set of pages that we already visited (so we don't visit the same page multiple times)
+   */
+  #pagesAlreadyVisited = new Set();
+
+  /**
+   * @var {Array} pagesToVisit a collection of pages that are going to be visited
+   */
+  #pagesToVisit = [];
 
   /**
    *
-   * @param {CrawlerInterface} navigator
+   * @param {CrawlerInterface} crawler
    * @param {*} outputWriter
-   * @param {*} config
+   * @param {object} instructions
    * @param {number} delayTimer
    */
-  constructor(navigator, outputWriter, config, delayTimer = 2000) {
-    this.navigator = navigator;
-    this.config = config;
-    this.outputWriter = outputWriter;
+  constructor(crawler, outputWriter, instructions, delayTimer = 2000) {
+    this.#crawler = crawler;
+    this.#instructions = instructions;
+    this.#outputWriter = outputWriter;
 
-    this.delayTimer = delayTimer;
+    this.#delayTimer = delayTimer;
   }
 
+  /**
+   * Starts crawling and scraping
+   */
   async start() {
-    await this.processPage(this.config.startAddress, true);
+    await this.#processPage(this.#instructions.startAddress, true);
 
-    while (this.pagesToVisit.length > 0) {
-      const nextPage = this.pagesToVisit.pop();
-      if (this.pagesAlreadyVisited.has(nextPage)) {
+    while (this.#pagesToVisit.length > 0) {
+      const nextPage = this.#pagesToVisit.pop();
+      if (this.#pagesAlreadyVisited.has(nextPage)) {
         continue;
       }
 
-      await wait(this.delayTimer);
-      await this.processPage(nextPage);
+      await wait(this.#delayTimer);
+      await this.#processPage(nextPage);
     }
 
-    await this.navigator.close();
+    await this.#crawler.close();
   }
 
-  async processPage(address, withCategory = false) {
+  /**
+   * Processes an address:
+   *  - opening
+   *  - collects new pages to visit
+   *  - collects products
+   *
+   * @param {string} address
+   * @param {boolean} withCategory
+   */
+  async #processPage(address, withCategory = false) {
     let newPagesToVisit;
 
-    this.pagesAlreadyVisited.add(address);
-    await this.navigator.gotoAddress(address);
+    this.#pagesAlreadyVisited.add(address);
+    await this.#crawler.gotoAddress(address);
 
-    let { container, metadata } = this.config.item;
-    const newProducts = await this.navigator.getElements(container, metadata);
+    let { container, metadata } = this.#instructions.item;
+    const newProducts = await this.#crawler.getElements(container, metadata);
 
     if (withCategory) {
-      ({ container, metadata } = this.config.category);
-      newPagesToVisit = await this.navigator.getElements(container, metadata);
+      ({ container, metadata } = this.#instructions.category);
+      newPagesToVisit = await this.#crawler.getElements(container, metadata);
       newPagesToVisit.forEach((page) => {
-        this.pagesToVisit.push(page.link);
+        this.#pagesToVisit.push(page.link);
       }, this);
     }
 
-    ({ container, metadata } = this.config.subcategory);
-    newPagesToVisit = await this.navigator.getElements(container, metadata);
+    ({ container, metadata } = this.#instructions.subcategory);
+    newPagesToVisit = await this.#crawler.getElements(container, metadata);
     newPagesToVisit.forEach((page) => {
-      this.pagesToVisit.push(page.link);
+      this.#pagesToVisit.push(page.link);
     }, this);
 
-    // console.log(newProducts);
+    console.log(newProducts);
     // console.log(this.pagesToVisit);
   }
 }

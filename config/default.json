@@ -1,0 +1,6 @@
+{
+  "puppeteer": {
+    "headless": true,
+    "devtools": false
+  }
+}
