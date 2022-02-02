@@ -1,6 +1,6 @@
 {
   "startAddress": "https://oda.com/no/",
-  "category": {
+  "clickOnce": {
     "container": {
       "selector": ".product-category"
     },
@@ -11,7 +11,7 @@
       }
     }
   },
-  "subcategory": {
+  "click": {
     "container": {
       "selector": ".child-category-headline"
     },

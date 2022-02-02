@@ -1,19 +1,19 @@
 import PuppeteerCrawler from "./src/crawlers/PuppeteerCrawler.js";
 import ScrapingCoordinator from "./src/ScrapingCoordinator.js";
-import ConsoleWriter from "./src/outputWriters/ConsoleWriter.js";
+import { getOutputWriterInstance } from "./src/outputWriters/WriterFactory.js";
 import { getInstructions } from "./instructions/index.js";
+
 import config from "config";
 
-const instructions = getInstructions("oda");
+const instructions = getInstructions(config.instructionSet);
 
-const crawler = new PuppeteerCrawler(config.puppeteer);
-const outputWriter = new ConsoleWriter();
+const crawler = new PuppeteerCrawler();
+const outputWriter = getOutputWriterInstance(config.outputType);
 
 const scrapingCoordinator = new ScrapingCoordinator(
   crawler,
   outputWriter,
-  instructions,
-  config.delay
+  instructions
 );
 
 await scrapingCoordinator.start();

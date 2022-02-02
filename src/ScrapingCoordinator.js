@@ -2,6 +2,8 @@ import CrawlerInterface from "./crawlers/CrawlerInterface.js";
 import WriterInterface from "./outputWriters/WriterInterface.js";
 import { wait } from "./utils.js";
 
+import config from "config";
+
 export default class ScrapingCoordinator {
   /**
    * @var {CrawlerInterface} crawler a reference to a class that implements the CrawlerInterface
@@ -38,31 +40,45 @@ export default class ScrapingCoordinator {
    * @param {CrawlerInterface} crawler
    * @param {WriterInterface} outputWriter
    * @param {object} instructions
-   * @param {number} delayTimer
    */
-  constructor(crawler, outputWriter, instructions, delayTimer) {
+  constructor(crawler, outputWriter, instructions) {
     this.#crawler = crawler;
     this.#instructions = instructions;
     this.#outputWriter = outputWriter;
 
-    this.#delayTimer = delayTimer;
+    this.#delayTimer = config.delay;
   }
 
   /**
    * Starts crawling and scraping
    */
   async start() {
+    console.log(`Processing page: ${this.#instructions.startAddress}`);
     await this.#processPage(this.#instructions.startAddress, true);
 
     while (this.#pagesToVisit.length > 0) {
       const nextPage = this.#pagesToVisit.pop();
+
+      if (!nextPage) {
+        console.log(`Malformed address data. Skipping`);
+        continue;
+      }
+
+      console.log(`Starting to process page: ${nextPage}`);
+
       if (this.#pagesAlreadyVisited.has(nextPage)) {
+        console.log(`Duplicate page: ${nextPage}. Skipping`);
         continue;
       }
 
       await wait(this.#delayTimer);
       await this.#processPage(nextPage);
+
+      console.log(`Finished processing page ${nextPage}`);
+      console.log(`${this.#pagesToVisit.length} pages remaining`);
     }
+
+    console.log(`Finished processing. Closing browser`);
 
     await this.#crawler.close();
   }
@@ -74,32 +90,36 @@ export default class ScrapingCoordinator {
    *  - collects products
    *
    * @param {string} address
-   * @param {boolean} withCategory
+   * @param {boolean} isFirstPage
    */
-  async #processPage(address, withCategory = false) {
-    let newPagesToVisit;
-
+  async #processPage(address, isFirstPage = false) {
     this.#pagesAlreadyVisited.add(address);
     await this.#crawler.gotoAddress(address);
 
-    let { container, metadata } = this.#instructions.item;
-    const newProducts = await this.#crawler.getElements(container, metadata);
-
-    if (withCategory) {
-      ({ container, metadata } = this.#instructions.category);
-      newPagesToVisit = await this.#crawler.getElements(container, metadata);
-      newPagesToVisit.forEach((page) => {
-        this.#pagesToVisit.push(page.link);
-      }, this);
+    if (isFirstPage) {
+      this.#processLinks(this.#instructions.clickOnce);
     }
 
-    ({ container, metadata } = this.#instructions.subcategory);
-    newPagesToVisit = await this.#crawler.getElements(container, metadata);
+    this.#processLinks(this.#instructions.click);
+
+    const { container, metadata } = this.#instructions.item;
+    const newProducts = await this.#crawler.getElements(container, metadata);
+
+    console.log(`Discovered ${newProducts.length} products.`);
+    this.#outputWriter.write(newProducts);
+  }
+
+  async #processLinks() {
+    const { container, metadata } = linkInstructions;
+    const newPagesToVisit = await this.#crawler.getElements(
+      container,
+      metadata
+    );
+
+    console.log(`Discovered ${newPagesToVisit.length} pages to visit.`);
+
     newPagesToVisit.forEach((page) => {
       this.#pagesToVisit.push(page.link);
     }, this);
-
-    this.#outputWriter.write(newProducts);
-    // console.log(this.pagesToVisit);
   }
 }

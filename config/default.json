@@ -1,4 +1,7 @@
 {
+  "instructionSet": "finn",
+  "outputType": "console",
+
   "puppeteer": {
     "headless": true,
     "devtools": false

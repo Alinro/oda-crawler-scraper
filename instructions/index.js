@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const mapping = {
   oda: "./oda.json",
-  emag: "./emag.json",
+  finn: "./finn.json",
 };
 
 export const getInstructions = (name) => {

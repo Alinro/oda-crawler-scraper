@@ -2,6 +2,8 @@ import WriterInterface from "./WriterInterface.js";
 
 export default class ConsoleWriter extends WriterInterface {
   write(elements) {
+    console.log("Starting writing to console");
+
     if (elements.length === 0) {
       return;
     }

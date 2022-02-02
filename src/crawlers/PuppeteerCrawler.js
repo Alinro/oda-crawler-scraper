@@ -1,31 +1,23 @@
 import puppeteer from "puppeteer";
+import config from "config";
+
 import CrawlerInterface from "./CrawlerInterface.js";
 
 export default class PuppeteerCrawler extends CrawlerInterface {
   /**
-   * @param {object} options a set of options that is passed to puppeteer during launch
-   */
-  #options;
-
-  /**
-   * @param {puppeteer.Browser} browser a reference to the browser instance that puppeteer launched
+   * @var {puppeteer.Browser} browser a reference to the browser instance that puppeteer launched
    */
   #browser;
 
   /**
-   * @param {puppeteer.Page} page a reference to the page tab inside the browser controlled by puppeteer
+   * @var {puppeteer.Page} page a reference to the page tab inside the browser controlled by puppeteer
    */
   #page;
 
   /**
-   *
-   * @param {object} options
+   * @var {puppetter.ResponseForRequest} response a reference to the response data for the last page load
    */
-  constructor(options) {
-    super();
-
-    this.#options = options;
-  }
+  #response;
 
   /**
    * Navigate to the specified address in the current tab
@@ -34,19 +26,19 @@ export default class PuppeteerCrawler extends CrawlerInterface {
    */
   async gotoAddress(address) {
     if (!this.#browser) {
-      this.#browser = await puppeteer.launch(this.#options);
+      this.#browser = await puppeteer.launch(config.puppeteer);
     }
 
     if (!this.#page) {
       this.#page = await this.#browser.newPage();
+      await this.#page.setViewport({
+        width: 1920,
+        height: 1080,
+        deviceScaleFactor: 1,
+      });
     }
 
-    await this.#page.setViewport({
-      width: 1920,
-      height: 1080,
-      deviceScaleFactor: 1,
-    });
-    await this.#page.goto(address);
+    this.#response = await this.#page.goto(address);
   }
 
   /**
@@ -58,12 +50,11 @@ export default class PuppeteerCrawler extends CrawlerInterface {
    */
   async getElements(containerConfig, metadataConfig) {
     // workaround to force puppeteer to populate the source map so we can debug our code in the browser
-    // this.page.exposeFunction("nothing", () => null);
+    // this.#page.exposeFunction("nothing", () => null);
 
     return this.#page.evaluate(
       (containerConfig, metadataConfig) => {
         // debugger;
-
         const containers = document.querySelectorAll(containerConfig.selector);
 
         const metadata = [];
@@ -75,7 +66,15 @@ export default class PuppeteerCrawler extends CrawlerInterface {
             metadataConfig
           )) {
             if (selector) {
-              element[key] = container.querySelector(selector)[property];
+              const htmlElement = container.querySelector(selector);
+              if (!htmlElement) {
+                console.warn(
+                  `Can't find ${selector} in container ${containerConfig.selector}`
+                );
+                continue;
+              }
+
+              element[key] = htmlElement[property];
             } else {
               element[key] = container[property];
             }
@@ -92,10 +91,9 @@ export default class PuppeteerCrawler extends CrawlerInterface {
   }
 
   /**
-   * Stops puppeteer by closing the page and the browser
+   * Stops puppeteer by closing the browser
    */
   async close() {
-    this.#page.close();
     this.#browser.close();
   }
 }
