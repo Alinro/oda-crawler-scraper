@@ -1,0 +1,44 @@
+{
+  "startAddress": "https://oda.com/no/",
+  "category": {
+    "container": {
+      "selector": ".product-category"
+    },
+    "metadata": {
+      "link": {
+        "property": "href",
+        "selector": "a.product-category__link"
+      }
+    }
+  },
+  "subCategory": {
+    "container": {
+      "selector": ".child-category-headline"
+    },
+    "metadata": {
+      "link": {
+        "property": "href",
+        "selector": "a.headline"
+      }
+    }
+  },
+  "item": {
+    "container": {
+      "selector": ".product-list-item"
+    },
+    "metadata": {
+      "price": {
+        "property": "innerText",
+        "selector": ".price > font > font"
+      },
+      "name": {
+        "property": "innerText",
+        "selector": ".name-main > font > font"
+      },
+      "unitPrice": {
+        "property": "innerText",
+        "selector": ".unit-price > font > font"
+      }
+    }
+  }
+}
