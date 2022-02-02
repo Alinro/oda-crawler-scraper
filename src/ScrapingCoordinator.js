@@ -1,4 +1,5 @@
 import CrawlerInterface from "./crawlers/CrawlerInterface.js";
+import WriterInterface from "./outputWriters/WriterInterface.js";
 import { wait } from "./utils.js";
 
 export default class ScrapingCoordinator {
@@ -8,7 +9,7 @@ export default class ScrapingCoordinator {
   #crawler;
 
   /**
-   * @var {object} outputWriter TODO
+   * @var {WriterInterface} outputWriter TODO
    */
   #outputWriter;
 
@@ -35,11 +36,11 @@ export default class ScrapingCoordinator {
   /**
    *
    * @param {CrawlerInterface} crawler
-   * @param {*} outputWriter
+   * @param {WriterInterface} outputWriter
    * @param {object} instructions
    * @param {number} delayTimer
    */
-  constructor(crawler, outputWriter, instructions, delayTimer = 2000) {
+  constructor(crawler, outputWriter, instructions, delayTimer) {
     this.#crawler = crawler;
     this.#instructions = instructions;
     this.#outputWriter = outputWriter;
@@ -98,7 +99,7 @@ export default class ScrapingCoordinator {
       this.#pagesToVisit.push(page.link);
     }, this);
 
-    console.log(newProducts);
+    this.#outputWriter.write(newProducts);
     // console.log(this.pagesToVisit);
   }
 }

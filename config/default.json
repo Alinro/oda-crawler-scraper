@@ -2,5 +2,9 @@
   "puppeteer": {
     "headless": true,
     "devtools": false
-  }
+  },
+  "htmlWriter": {
+    "file": "output.html"
+  },
+  "delay": 2000
 }
