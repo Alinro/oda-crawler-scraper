@@ -11,7 +11,7 @@
       }
     }
   },
-  "subCategory": {
+  "subcategory": {
     "container": {
       "selector": ".child-category-headline"
     },
@@ -29,15 +29,15 @@
     "metadata": {
       "price": {
         "property": "innerText",
-        "selector": ".price > font > font"
+        "selector": ".price"
       },
       "name": {
         "property": "innerText",
-        "selector": ".name-main > font > font"
+        "selector": ".name-main"
       },
       "unitPrice": {
         "property": "innerText",
-        "selector": ".unit-price > font > font"
+        "selector": ".unit-price"
       }
     }
   }

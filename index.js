@@ -1,30 +1,7 @@
-import PageNavigator from "./src/PageNavigator.js";
-import ScrapperManager from "./src/ScrapperManager.js";
+import PuppeteerCrawler from "./src/crawlers/PuppeteerCrawler.js";
+import ScrapingCoordinator from "./src/ScrapingCoordinator.js";
 import config from "./src/config.js";
 
-const pageNavigator = new PageNavigator(false);
-const scrapperManager = new ScrapperManager(pageNavigator);
-
-console.log(newProducts);
-console.log(nextCategoryPages);
-console.log(nextSubcategoryPages);
-
-pageNavigator.close();
-// await browser.close();
-
-//
-/*
-
-PageNavigator
-    - getNextPage
-
-PageInspector
-    - getProducts
-    - getLinks
-    - getNextPage
-
-ScrapperManager
-    - visitedPages
-    - gatheredProducts
-    - pagesToVisit
-*/
+const navigator = new PuppeteerCrawler(true);
+const scrapingCoordinator = new ScrapingCoordinator(navigator, null, config);
+await scrapingCoordinator.start();

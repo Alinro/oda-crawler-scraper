@@ -1,11 +1,14 @@
 import puppeteer from "puppeteer";
+import CrawlerInterface from "./CrawlerInterface.js";
 
-export default class PageNavigator {
+export default class PageNavigator extends CrawlerInterface {
   headless;
   browser = null;
   page = null;
 
   constructor(headless = true) {
+    super();
+
     this.headless = headless;
   }
 
@@ -34,8 +37,11 @@ export default class PageNavigator {
   }
 
   async getElements(containerConfig, metadataConfig) {
+    // this.page.exposeFunction("nothing", () => null);
+
     return this.page.evaluate(
       (containerConfig, metadataConfig) => {
+        debugger;
         const containers = document.querySelectorAll(containerConfig.selector);
 
         const metadata = [];
