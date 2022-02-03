@@ -4,11 +4,11 @@ import config from "config";
 
 export default class HtmlWriter extends WriterInterface {
   write(elements) {
-    console.log(`Starting writing to html file ${config.htmlWriter.file}`);
-
     if (elements.length === 0) {
       return;
     }
+
+    console.log(`Starting writing to html file ${config.htmlWriter.file}`);
 
     this.writeStream = fs.createWriteStream(config.htmlWriter.file, {
       flags: "a",

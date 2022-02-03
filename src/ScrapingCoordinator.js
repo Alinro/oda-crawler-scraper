@@ -6,12 +6,12 @@ import config from "config";
 
 export default class ScrapingCoordinator {
   /**
-   * @var {CrawlerInterface} crawler a reference to a class that implements the CrawlerInterface
+   * @var {CrawlerInterface} crawler a class that interacts with the page and its content
    */
   #crawler;
 
   /**
-   * @var {WriterInterface} outputWriter TODO
+   * @var {WriterInterface} outputWriter a reference to a class that implements the WriterInterface. it handles the output process
    */
   #outputWriter;
 
