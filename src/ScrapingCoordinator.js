@@ -64,14 +64,15 @@ export default class ScrapingCoordinator {
         continue;
       }
 
-      console.log(`Starting to process page: ${nextPage}`);
-
       if (this.#pagesAlreadyVisited.has(nextPage)) {
         console.log(`Duplicate page: ${nextPage}. Skipping`);
         continue;
       }
 
       await wait(this.#delayTimer);
+
+      console.log(`Starting to process page: ${nextPage}`);
+
       await this.#processPage(nextPage);
 
       console.log(`Finished processing page ${nextPage}`);

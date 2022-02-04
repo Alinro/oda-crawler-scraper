@@ -34,7 +34,6 @@ export default class PuppeteerCrawler extends CrawlerInterface {
       await this.#page.setViewport({
         width: 1920,
         height: 1080,
-        deviceScaleFactor: 1,
       });
     }
 
